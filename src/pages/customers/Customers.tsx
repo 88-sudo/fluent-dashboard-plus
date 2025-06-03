@@ -1,41 +1,70 @@
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Search, Filter, Download } from 'lucide-react';
+import { useSupabaseData } from '../../hooks/useSupabaseData';
+import LoadingSpinner from '../../components/LoadingSpinner';
+import ErrorDisplay from '../../components/ErrorDisplay';
 
 const Customers = () => {
+  const { data, loading, error } = useSupabaseData();
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState('all');
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
 
-  // 샘플 고객 데이터
-  const customers = [
-    { id: 1, company_name: '삼성전자', company_type: '대기업', region: '서울', created_at: '2024-01-15' },
-    { id: 2, company_name: '네이버', company_type: '대기업', region: '경기', created_at: '2024-01-20' },
-    { id: 3, company_name: '토스', company_type: '스타트업', region: '서울', created_at: '2024-02-01' },
-    { id: 4, company_name: '카카오', company_type: '대기업', region: '서울', created_at: '2024-02-10' },
-    { id: 5, company_name: '쿠팡', company_type: '대기업', region: '서울', created_at: '2024-02-15' },
-  ];
-
-  const filteredCustomers = customers.filter(customer => {
-    const matchesSearch = customer.company_name.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesFilter = filterType === 'all' || customer.company_type === filterType;
-    return matchesSearch && matchesFilter;
-  });
+  const filteredCustomers = useMemo(() => {
+    return data.customers.filter(customer => {
+      const matchesSearch = customer.COMPANY_NAME?.toLowerCase().includes(searchTerm.toLowerCase()) || false;
+      const matchesFilter = filterType === 'all' || customer.COMPANY_TYPE === filterType;
+      return matchesSearch && matchesFilter;
+    });
+  }, [data.customers, searchTerm, filterType]);
 
   const totalPages = Math.ceil(filteredCustomers.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const paginatedCustomers = filteredCustomers.slice(startIndex, startIndex + itemsPerPage);
 
+  // 사용 가능한 회사 유형 추출
+  const companyTypes = [...new Set(data.customers.map(c => c.COMPANY_TYPE).filter(Boolean))];
+
+  const downloadCSV = () => {
+    const headers = ['ID', '회사명', '회사유형', '지역', '업종', '회사규모', '국가', '등록일'];
+    const csvContent = [
+      headers.join(','),
+      ...filteredCustomers.map(customer => [
+        customer.CUSTOMER_ID,
+        customer.COMPANY_NAME || '',
+        customer.COMPANY_TYPE || '',
+        customer.REGION || '',
+        customer.INDUSTRY_TYPE || '',
+        customer.COMPANY_SIZE || '',
+        customer.COUNTRY || '',
+        customer.REG_DATE || ''
+      ].join(','))
+    ].join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', 'customers.csv');
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  if (loading) return <LoadingSpinner />;
+  if (error) return <ErrorDisplay error={error} />;
+
   return (
     <div className="p-6 space-y-6 bg-gray-50 min-h-screen">
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold text-gray-900">고객 관리</h1>
-        <Button className="bg-blue-600 hover:bg-blue-700">
+        <Button onClick={downloadCSV} className="bg-blue-600 hover:bg-blue-700">
           <Download className="w-4 h-4 mr-2" />
           CSV 다운로드
         </Button>
@@ -61,10 +90,9 @@ const Customers = () => {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">모든 유형</SelectItem>
-                <SelectItem value="대기업">대기업</SelectItem>
-                <SelectItem value="중소기업">중소기업</SelectItem>
-                <SelectItem value="스타트업">스타트업</SelectItem>
-                <SelectItem value="개인사업자">개인사업자</SelectItem>
+                {companyTypes.map(type => (
+                  <SelectItem key={type} value={type}>{type}</SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
@@ -85,26 +113,28 @@ const Customers = () => {
                   <th className="text-left p-4 font-semibold text-gray-900">회사명</th>
                   <th className="text-left p-4 font-semibold text-gray-900">회사 유형</th>
                   <th className="text-left p-4 font-semibold text-gray-900">지역</th>
+                  <th className="text-left p-4 font-semibold text-gray-900">업종</th>
                   <th className="text-left p-4 font-semibold text-gray-900">등록일</th>
                 </tr>
               </thead>
               <tbody>
                 {paginatedCustomers.map((customer) => (
-                  <tr key={customer.id} className="border-b border-gray-100 hover:bg-gray-50 cursor-pointer">
-                    <td className="p-4 text-gray-900">{customer.id}</td>
-                    <td className="p-4 text-gray-900 font-medium">{customer.company_name}</td>
+                  <tr key={customer.CUSTOMER_ID} className="border-b border-gray-100 hover:bg-gray-50 cursor-pointer">
+                    <td className="p-4 text-gray-900">{customer.CUSTOMER_ID}</td>
+                    <td className="p-4 text-gray-900 font-medium">{customer.COMPANY_NAME || '-'}</td>
                     <td className="p-4">
                       <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                        customer.company_type === '대기업' ? 'bg-blue-100 text-blue-800' :
-                        customer.company_type === '중소기업' ? 'bg-green-100 text-green-800' :
-                        customer.company_type === '스타트업' ? 'bg-yellow-100 text-yellow-800' :
+                        customer.COMPANY_TYPE === '대기업' ? 'bg-blue-100 text-blue-800' :
+                        customer.COMPANY_TYPE === '중소기업' ? 'bg-green-100 text-green-800' :
+                        customer.COMPANY_TYPE === '스타트업' ? 'bg-yellow-100 text-yellow-800' :
                         'bg-gray-100 text-gray-800'
                       }`}>
-                        {customer.company_type}
+                        {customer.COMPANY_TYPE || '-'}
                       </span>
                     </td>
-                    <td className="p-4 text-gray-600">{customer.region}</td>
-                    <td className="p-4 text-gray-600">{customer.created_at}</td>
+                    <td className="p-4 text-gray-600">{customer.REGION || '-'}</td>
+                    <td className="p-4 text-gray-600">{customer.INDUSTRY_TYPE || '-'}</td>
+                    <td className="p-4 text-gray-600">{customer.REG_DATE || '-'}</td>
                   </tr>
                 ))}
               </tbody>
