@@ -275,7 +275,7 @@ const Dashboard = () => {
         />
         <MetricCard
           title="상위 제품 평균가"
-          value={`₩${(metrics.topProducts.reduce((sum, p) => sum + (p.SELLINGPRICE || 0), 0) / 3).toLocaleString()}`}
+          value={`₩${(metrics.topProducts.reduce((sum, p) => sum + (p.sellingprice || 0), 0) / 3).toLocaleString()}`}
           icon={Package}
           change="TOP 3 제품"
           changeType="positive"
