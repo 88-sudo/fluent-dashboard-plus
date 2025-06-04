@@ -7,6 +7,10 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Layout from "./components/Layout";
 import Dashboard from "./components/Dashboard";
 import Customers from "./pages/customers/Customers";
+import Contacts from "./pages/contacts/Contacts";
+import Products from "./pages/products/Products";
+import Predictions from "./pages/predictions/Predictions";
+import Segments from "./pages/segments/Segments";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -21,11 +25,11 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Dashboard />} />
             <Route path="/customers" element={<Customers />} />
-            {/* 추가 라우트들은 여기에 구현 예정 */}
-            <Route path="/contacts" element={<div className="p-6">연락처 페이지 (구현 예정)</div>} />
-            <Route path="/products" element={<div className="p-6">제품 페이지 (구현 예정)</div>} />
-            <Route path="/predictions" element={<div className="p-6">예측 페이지 (구현 예정)</div>} />
-            <Route path="/segments" element={<div className="p-6">세그먼트 페이지 (구현 예정)</div>} />
+            <Route path="/contacts" element={<Contacts />} />
+            <Route path="/products" element={<Products />} />
+            <Route path="/predictions" element={<Predictions />} />
+            <Route path="/segments" element={<Segments />} />
+            {/* 나머지 페이지들은 다음 메시지에서 구현 */}
             <Route path="/sales-activities" element={<div className="p-6">영업 활동 페이지 (구현 예정)</div>} />
             <Route path="/engagements" element={<div className="p-6">참여 페이지 (구현 예정)</div>} />
             <Route path="/orders" element={<div className="p-6">주문 페이지 (구현 예정)</div>} />

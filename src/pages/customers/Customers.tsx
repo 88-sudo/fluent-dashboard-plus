@@ -18,8 +18,8 @@ const Customers = () => {
 
   const filteredCustomers = useMemo(() => {
     return data.customers.filter(customer => {
-      const matchesSearch = customer.COMPANY_NAME?.toLowerCase().includes(searchTerm.toLowerCase()) || false;
-      const matchesFilter = filterType === 'all' || customer.COMPANY_TYPE === filterType;
+      const matchesSearch = customer.company_name?.toLowerCase().includes(searchTerm.toLowerCase()) || false;
+      const matchesFilter = filterType === 'all' || customer.company_type === filterType;
       return matchesSearch && matchesFilter;
     });
   }, [data.customers, searchTerm, filterType]);
@@ -29,21 +29,21 @@ const Customers = () => {
   const paginatedCustomers = filteredCustomers.slice(startIndex, startIndex + itemsPerPage);
 
   // 사용 가능한 회사 유형 추출
-  const companyTypes = [...new Set(data.customers.map(c => c.COMPANY_TYPE).filter(Boolean))];
+  const companyTypes = [...new Set(data.customers.map(c => c.company_type).filter(Boolean))];
 
   const downloadCSV = () => {
     const headers = ['ID', '회사명', '회사유형', '지역', '업종', '회사규모', '국가', '등록일'];
     const csvContent = [
       headers.join(','),
       ...filteredCustomers.map(customer => [
-        customer.CUSTOMER_ID,
-        customer.COMPANY_NAME || '',
-        customer.COMPANY_TYPE || '',
-        customer.REGION || '',
-        customer.INDUSTRY_TYPE || '',
-        customer.COMPANY_SIZE || '',
-        customer.COUNTRY || '',
-        customer.REG_DATE || ''
+        customer.customer_id,
+        customer.company_name || '',
+        customer.company_type || '',
+        customer.region || '',
+        customer.industry_type || '',
+        customer.company_size || '',
+        customer.country || '',
+        customer.reg_date || ''
       ].join(','))
     ].join('\n');
 
@@ -119,22 +119,22 @@ const Customers = () => {
               </thead>
               <tbody>
                 {paginatedCustomers.map((customer) => (
-                  <tr key={customer.CUSTOMER_ID} className="border-b border-gray-100 hover:bg-gray-50 cursor-pointer">
-                    <td className="p-4 text-gray-900">{customer.CUSTOMER_ID}</td>
-                    <td className="p-4 text-gray-900 font-medium">{customer.COMPANY_NAME || '-'}</td>
+                  <tr key={customer.customer_id} className="border-b border-gray-100 hover:bg-gray-50 cursor-pointer">
+                    <td className="p-4 text-gray-900">{customer.customer_id}</td>
+                    <td className="p-4 text-gray-900 font-medium">{customer.company_name || '-'}</td>
                     <td className="p-4">
                       <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                        customer.COMPANY_TYPE === '대기업' ? 'bg-blue-100 text-blue-800' :
-                        customer.COMPANY_TYPE === '중소기업' ? 'bg-green-100 text-green-800' :
-                        customer.COMPANY_TYPE === '스타트업' ? 'bg-yellow-100 text-yellow-800' :
+                        customer.company_type === '대기업' ? 'bg-blue-100 text-blue-800' :
+                        customer.company_type === '중소기업' ? 'bg-green-100 text-green-800' :
+                        customer.company_type === '스타트업' ? 'bg-yellow-100 text-yellow-800' :
                         'bg-gray-100 text-gray-800'
                       }`}>
-                        {customer.COMPANY_TYPE || '-'}
+                        {customer.company_type || '-'}
                       </span>
                     </td>
-                    <td className="p-4 text-gray-600">{customer.REGION || '-'}</td>
-                    <td className="p-4 text-gray-600">{customer.INDUSTRY_TYPE || '-'}</td>
-                    <td className="p-4 text-gray-600">{customer.REG_DATE || '-'}</td>
+                    <td className="p-4 text-gray-600">{customer.region || '-'}</td>
+                    <td className="p-4 text-gray-600">{customer.industry_type || '-'}</td>
+                    <td className="p-4 text-gray-600">{customer.reg_date || '-'}</td>
                   </tr>
                 ))}
               </tbody>
