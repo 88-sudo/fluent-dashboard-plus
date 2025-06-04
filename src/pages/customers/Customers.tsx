@@ -1,5 +1,6 @@
 
 import React, { useState, useMemo } from 'react';
+import { Link } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -119,9 +120,16 @@ const Customers = () => {
               </thead>
               <tbody>
                 {paginatedCustomers.map((customer) => (
-                  <tr key={customer.customer_id} className="border-b border-gray-100 hover:bg-gray-50 cursor-pointer">
+                  <tr key={customer.customer_id} className="border-b border-gray-100 hover:bg-gray-50">
                     <td className="p-4 text-gray-900">{customer.customer_id}</td>
-                    <td className="p-4 text-gray-900 font-medium">{customer.company_name || '-'}</td>
+                    <td className="p-4 text-gray-900 font-medium">
+                      <Link 
+                        to={`/customers/${customer.customer_id}`}
+                        className="text-blue-600 hover:text-blue-800 hover:underline cursor-pointer"
+                      >
+                        {customer.company_name || '-'}
+                      </Link>
+                    </td>
                     <td className="p-4">
                       <span className={`px-2 py-1 rounded-full text-xs font-medium ${
                         customer.company_type === '대기업' ? 'bg-blue-100 text-blue-800' :
