@@ -9,113 +9,259 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      contacts: {
+      claims: {
         Row: {
-          CONTACT_DATE: string | null
-          CONTACT_ID: number
-          CUSTOMER_ID: number | null
-          DEPARTMENT: string | null
-          EMAIL: string | null
-          IS_EXECUTIVE: string | null
-          IS_KEYMAN: string | null
-          NAME: string | null
-          PHONE: string | null
-          POSITION: string | null
-          PREFERRED_CHANNEL: string | null
+          claim_id: number
+          confidence_score: number | null
+          contact_id: number
+          predicted_claim_level: string
+          predicted_claim_probability: number | null
+          predicted_claim_type: string | null
+          prediction_date: string
         }
         Insert: {
-          CONTACT_DATE?: string | null
-          CONTACT_ID: number
-          CUSTOMER_ID?: number | null
-          DEPARTMENT?: string | null
-          EMAIL?: string | null
-          IS_EXECUTIVE?: string | null
-          IS_KEYMAN?: string | null
-          NAME?: string | null
-          PHONE?: string | null
-          POSITION?: string | null
-          PREFERRED_CHANNEL?: string | null
+          claim_id?: number
+          confidence_score?: number | null
+          contact_id: number
+          predicted_claim_level: string
+          predicted_claim_probability?: number | null
+          predicted_claim_type?: string | null
+          prediction_date: string
         }
         Update: {
-          CONTACT_DATE?: string | null
-          CONTACT_ID?: number
-          CUSTOMER_ID?: number | null
-          DEPARTMENT?: string | null
-          EMAIL?: string | null
-          IS_EXECUTIVE?: string | null
-          IS_KEYMAN?: string | null
-          NAME?: string | null
-          PHONE?: string | null
-          POSITION?: string | null
-          PREFERRED_CHANNEL?: string | null
+          claim_id?: number
+          confidence_score?: number | null
+          contact_id?: number
+          predicted_claim_level?: string
+          predicted_claim_probability?: number | null
+          predicted_claim_type?: string | null
+          prediction_date?: string
         }
         Relationships: [
           {
-            foreignKeyName: "contacts_CUSTOMER_ID_fkey"
-            columns: ["CUSTOMER_ID"]
+            foreignKeyName: "fk_claims_contact"
+            columns: ["contact_id"]
+            isOneToOne: false
+            referencedRelation: "contacts"
+            referencedColumns: ["contact_id"]
+          },
+        ]
+      }
+      contacts: {
+        Row: {
+          contact_date: string | null
+          contact_id: number
+          customer_id: number
+          department: string | null
+          email: string | null
+          is_executive: string
+          is_keyman: string
+          name: string
+          phone: string | null
+          position: string | null
+          preferred_channel: string | null
+        }
+        Insert: {
+          contact_date?: string | null
+          contact_id?: number
+          customer_id: number
+          department?: string | null
+          email?: string | null
+          is_executive: string
+          is_keyman: string
+          name: string
+          phone?: string | null
+          position?: string | null
+          preferred_channel?: string | null
+        }
+        Update: {
+          contact_date?: string | null
+          contact_id?: number
+          customer_id?: number
+          department?: string | null
+          email?: string | null
+          is_executive?: string
+          is_keyman?: string
+          name?: string
+          phone?: string | null
+          position?: string | null
+          preferred_channel?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contacts_customer_id_fkey"
+            columns: ["customer_id"]
             isOneToOne: false
             referencedRelation: "customers"
-            referencedColumns: ["CUSTOMER_ID"]
+            referencedColumns: ["customer_id"]
+          },
+        ]
+      }
+      customer_order_forecast: {
+        Row: {
+          cof_id: number
+          customer_id: number
+          forecast_generation_datetime: string
+          mape: number | null
+          predicted_date: string
+          predicted_quantity: number | null
+          prediction_model: string
+        }
+        Insert: {
+          cof_id?: number
+          customer_id: number
+          forecast_generation_datetime: string
+          mape?: number | null
+          predicted_date: string
+          predicted_quantity?: number | null
+          prediction_model: string
+        }
+        Update: {
+          cof_id?: number
+          customer_id?: number
+          forecast_generation_datetime?: string
+          mape?: number | null
+          predicted_date?: string
+          predicted_quantity?: number | null
+          prediction_model?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "customer_order_forecast_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["customer_id"]
+          },
+        ]
+      }
+      customer_profit_analysis: {
+        Row: {
+          contact_id: number
+          customer_grade: string
+          profit_margin: number | null
+          total_cost: number | null
+          total_profit: number | null
+          total_sales: number | null
+        }
+        Insert: {
+          contact_id: number
+          customer_grade: string
+          profit_margin?: number | null
+          total_cost?: number | null
+          total_profit?: number | null
+          total_sales?: number | null
+        }
+        Update: {
+          contact_id?: number
+          customer_grade?: string
+          profit_margin?: number | null
+          total_cost?: number | null
+          total_profit?: number | null
+          total_sales?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fk_cpa_contact"
+            columns: ["contact_id"]
+            isOneToOne: false
+            referencedRelation: "contacts"
+            referencedColumns: ["contact_id"]
+          },
+        ]
+      }
+      customer_profit_grade: {
+        Row: {
+          contact_id: number
+          customer_grade: string
+          profit_margin: number | null
+          total_cost: number | null
+          total_profit: number | null
+          total_sales: number | null
+        }
+        Insert: {
+          contact_id: number
+          customer_grade: string
+          profit_margin?: number | null
+          total_cost?: number | null
+          total_profit?: number | null
+          total_sales?: number | null
+        }
+        Update: {
+          contact_id?: number
+          customer_grade?: string
+          profit_margin?: number | null
+          total_cost?: number | null
+          total_profit?: number | null
+          total_sales?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fk_cpg_contact"
+            columns: ["contact_id"]
+            isOneToOne: false
+            referencedRelation: "contacts"
+            referencedColumns: ["contact_id"]
           },
         ]
       }
       customers: {
         Row: {
-          COMPANY_NAME: string | null
-          COMPANY_SIZE: string | null
-          COMPANY_TYPE: string | null
-          COUNTRY: string | null
-          CUSTOMER_ID: number
-          INDUSTRY_TYPE: string | null
-          REG_DATE: string | null
-          REGION: string | null
+          company_name: string
+          company_size: string | null
+          company_type: string
+          country: string | null
+          customer_id: number
+          industry_type: string | null
+          reg_date: string | null
+          region: string | null
         }
         Insert: {
-          COMPANY_NAME?: string | null
-          COMPANY_SIZE?: string | null
-          COMPANY_TYPE?: string | null
-          COUNTRY?: string | null
-          CUSTOMER_ID: number
-          INDUSTRY_TYPE?: string | null
-          REG_DATE?: string | null
-          REGION?: string | null
+          company_name: string
+          company_size?: string | null
+          company_type: string
+          country?: string | null
+          customer_id?: number
+          industry_type?: string | null
+          reg_date?: string | null
+          region?: string | null
         }
         Update: {
-          COMPANY_NAME?: string | null
-          COMPANY_SIZE?: string | null
-          COMPANY_TYPE?: string | null
-          COUNTRY?: string | null
-          CUSTOMER_ID?: number
-          INDUSTRY_TYPE?: string | null
-          REG_DATE?: string | null
-          REGION?: string | null
+          company_name?: string
+          company_size?: string | null
+          company_type?: string
+          country?: string | null
+          customer_id?: number
+          industry_type?: string | null
+          reg_date?: string | null
+          region?: string | null
         }
         Relationships: []
       }
       engagements: {
         Row: {
-          customer_id: number | null
+          customer_id: number
           engagement_id: number
           last_active_date: string | null
           newsletter_opens: number | null
-          site_visits: string | null
-          survey_response: string | null
+          site_visits: number | null
+          survey_response: string
         }
         Insert: {
-          customer_id?: number | null
-          engagement_id: number
-          last_active_date?: string | null
-          newsletter_opens?: number | null
-          site_visits?: string | null
-          survey_response?: string | null
-        }
-        Update: {
-          customer_id?: number | null
+          customer_id: number
           engagement_id?: number
           last_active_date?: string | null
           newsletter_opens?: number | null
-          site_visits?: string | null
-          survey_response?: string | null
+          site_visits?: number | null
+          survey_response: string
+        }
+        Update: {
+          customer_id?: number
+          engagement_id?: number
+          last_active_date?: string | null
+          newsletter_opens?: number | null
+          site_visits?: number | null
+          survey_response?: string
         }
         Relationships: [
           {
@@ -123,216 +269,279 @@ export type Database = {
             columns: ["customer_id"]
             isOneToOne: false
             referencedRelation: "customers"
-            referencedColumns: ["CUSTOMER_ID"]
+            referencedColumns: ["customer_id"]
           },
         ]
       }
       issues: {
         Row: {
-          DESCRIPTION: string | null
-          ISSUE_DATE: string | null
-          ISSUE_ID: number
-          ISSUE_TYPE: string | null
-          ORDER_ID: number | null
-          RESOLVED_DATE: string | null
-          SEVERITY: string | null
-          STATUS: string | null
+          description: string | null
+          issue_date: string | null
+          issue_id: number
+          issue_type: string | null
+          order_id: number | null
+          resolved_date: string | null
+          severity: string | null
+          status: string
         }
         Insert: {
-          DESCRIPTION?: string | null
-          ISSUE_DATE?: string | null
-          ISSUE_ID: number
-          ISSUE_TYPE?: string | null
-          ORDER_ID?: number | null
-          RESOLVED_DATE?: string | null
-          SEVERITY?: string | null
-          STATUS?: string | null
+          description?: string | null
+          issue_date?: string | null
+          issue_id?: number
+          issue_type?: string | null
+          order_id?: number | null
+          resolved_date?: string | null
+          severity?: string | null
+          status: string
         }
         Update: {
-          DESCRIPTION?: string | null
-          ISSUE_DATE?: string | null
-          ISSUE_ID?: number
-          ISSUE_TYPE?: string | null
-          ORDER_ID?: number | null
-          RESOLVED_DATE?: string | null
-          SEVERITY?: string | null
-          STATUS?: string | null
-        }
-        Relationships: []
-      }
-      orders: {
-        Row: {
-          AMOUNT: number | null
-          CONTACT_ID: number | null
-          COST: number | null
-          DELIVERY_STATUS: string | null
-          MARGIN_RATE: number | null
-          ORDER_DATE: string | null
-          ORDER_ID: number
-          PAYMENT_STATUS: string | null
-          PRODUCT_ID: string | null
-          QUANTITY: number | null
-        }
-        Insert: {
-          AMOUNT?: number | null
-          CONTACT_ID?: number | null
-          COST?: number | null
-          DELIVERY_STATUS?: string | null
-          MARGIN_RATE?: number | null
-          ORDER_DATE?: string | null
-          ORDER_ID: number
-          PAYMENT_STATUS?: string | null
-          PRODUCT_ID?: string | null
-          QUANTITY?: number | null
-        }
-        Update: {
-          AMOUNT?: number | null
-          CONTACT_ID?: number | null
-          COST?: number | null
-          DELIVERY_STATUS?: string | null
-          MARGIN_RATE?: number | null
-          ORDER_DATE?: string | null
-          ORDER_ID?: number
-          PAYMENT_STATUS?: string | null
-          PRODUCT_ID?: string | null
-          QUANTITY?: number | null
+          description?: string | null
+          issue_date?: string | null
+          issue_id?: number
+          issue_type?: string | null
+          order_id?: number | null
+          resolved_date?: string | null
+          severity?: string | null
+          status?: string
         }
         Relationships: [
           {
-            foreignKeyName: "orders_CONTACT_ID_fkey"
-            columns: ["CONTACT_ID"]
+            foreignKeyName: "fk_issues_order"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["order_id"]
+          },
+        ]
+      }
+      orders: {
+        Row: {
+          amount: number | null
+          contact_id: number
+          cost: number | null
+          delivery_status: string
+          margin_rate: number | null
+          order_date: string | null
+          order_id: number
+          payment_status: string
+          product_id: string | null
+          quantity: number | null
+        }
+        Insert: {
+          amount?: number | null
+          contact_id: number
+          cost?: number | null
+          delivery_status: string
+          margin_rate?: number | null
+          order_date?: string | null
+          order_id?: number
+          payment_status: string
+          product_id?: string | null
+          quantity?: number | null
+        }
+        Update: {
+          amount?: number | null
+          contact_id?: number
+          cost?: number | null
+          delivery_status?: string
+          margin_rate?: number | null
+          order_date?: string | null
+          order_id?: number
+          payment_status?: string
+          product_id?: string | null
+          quantity?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fk_orders_contact"
+            columns: ["contact_id"]
             isOneToOne: false
             referencedRelation: "contacts"
-            referencedColumns: ["CONTACT_ID"]
+            referencedColumns: ["contact_id"]
           },
           {
-            foreignKeyName: "orders_PRODUCT_ID_fkey"
-            columns: ["PRODUCT_ID"]
+            foreignKeyName: "fk_orders_product"
+            columns: ["product_id"]
             isOneToOne: false
             referencedRelation: "products"
-            referencedColumns: ["PRODUCT_ID"]
+            referencedColumns: ["product_id"]
           },
         ]
       }
       predictions: {
         Row: {
-          CONTACT_ID: number | null
-          PREDICTED_DATE: string | null
-          PREDICTED_PRODUCT: string | null
-          PREDICTED_QUANTITY: number | null
-          PREDICTION_ID: number
+          contact_id: number
+          predicted_date: string | null
+          predicted_product: string | null
+          predicted_quantity: number | null
+          prediction_id: number
         }
         Insert: {
-          CONTACT_ID?: number | null
-          PREDICTED_DATE?: string | null
-          PREDICTED_PRODUCT?: string | null
-          PREDICTED_QUANTITY?: number | null
-          PREDICTION_ID: number
+          contact_id: number
+          predicted_date?: string | null
+          predicted_product?: string | null
+          predicted_quantity?: number | null
+          prediction_id?: number
         }
         Update: {
-          CONTACT_ID?: number | null
-          PREDICTED_DATE?: string | null
-          PREDICTED_PRODUCT?: string | null
-          PREDICTED_QUANTITY?: number | null
-          PREDICTION_ID?: number
+          contact_id?: number
+          predicted_date?: string | null
+          predicted_product?: string | null
+          predicted_quantity?: number | null
+          prediction_id?: number
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "fk_predictions_contact"
+            columns: ["contact_id"]
+            isOneToOne: false
+            referencedRelation: "contacts"
+            referencedColumns: ["contact_id"]
+          },
+        ]
       }
       products: {
         Row: {
-          CATEGORY: string | null
-          INCH: number | null
-          MODEL: string | null
-          NOTES: string | null
-          ORIGINALPRICE: number | null
-          PRODUCT_ID: string
-          SELLINGPRICE: number | null
+          category: string | null
+          inch: number | null
+          model: string
+          notes: string | null
+          originalprice: number | null
+          product_id: string
+          sellingprice: number | null
         }
         Insert: {
-          CATEGORY?: string | null
-          INCH?: number | null
-          MODEL?: string | null
-          NOTES?: string | null
-          ORIGINALPRICE?: number | null
-          PRODUCT_ID: string
-          SELLINGPRICE?: number | null
+          category?: string | null
+          inch?: number | null
+          model: string
+          notes?: string | null
+          originalprice?: number | null
+          product_id: string
+          sellingprice?: number | null
         }
         Update: {
-          CATEGORY?: string | null
-          INCH?: number | null
-          MODEL?: string | null
-          NOTES?: string | null
-          ORIGINALPRICE?: number | null
-          PRODUCT_ID?: string
-          SELLINGPRICE?: number | null
+          category?: string | null
+          inch?: number | null
+          model?: string
+          notes?: string | null
+          originalprice?: number | null
+          product_id?: string
+          sellingprice?: number | null
         }
         Relationships: []
       }
       sales_activities: {
         Row: {
-          ACTIVITY_DATE: string | null
-          ACTIVITY_DETAILS: string | null
-          ACTIVITY_ID: number
-          ACTIVITY_TYPE: string | null
-          CONTACT_ID: number | null
-          CUSTOMER_ID: number | null
-          OUTCOME: string | null
+          activity_date: string | null
+          activity_details: string | null
+          activity_id: number
+          activity_type: string | null
+          contact_id: number | null
+          customer_id: number
+          outcome: string | null
         }
         Insert: {
-          ACTIVITY_DATE?: string | null
-          ACTIVITY_DETAILS?: string | null
-          ACTIVITY_ID: number
-          ACTIVITY_TYPE?: string | null
-          CONTACT_ID?: number | null
-          CUSTOMER_ID?: number | null
-          OUTCOME?: string | null
+          activity_date?: string | null
+          activity_details?: string | null
+          activity_id?: number
+          activity_type?: string | null
+          contact_id?: number | null
+          customer_id: number
+          outcome?: string | null
         }
         Update: {
-          ACTIVITY_DATE?: string | null
-          ACTIVITY_DETAILS?: string | null
-          ACTIVITY_ID?: number
-          ACTIVITY_TYPE?: string | null
-          CONTACT_ID?: number | null
-          CUSTOMER_ID?: number | null
-          OUTCOME?: string | null
+          activity_date?: string | null
+          activity_details?: string | null
+          activity_id?: number
+          activity_type?: string | null
+          contact_id?: number | null
+          customer_id?: number
+          outcome?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "sales_activities_contact_id_fkey"
+            columns: ["contact_id"]
+            isOneToOne: false
+            referencedRelation: "contacts"
+            referencedColumns: ["contact_id"]
+          },
+          {
+            foreignKeyName: "sales_activities_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["customer_id"]
+          },
+        ]
+      }
+      sales_contact_forecast: {
+        Row: {
+          customer_id: number
+          scf_generated_at: string
+          scf_id: number
+          scf_mape: number | null
+          scf_recommended_date: string
+          scf_type: string
+        }
+        Insert: {
+          customer_id: number
+          scf_generated_at: string
+          scf_id?: number
+          scf_mape?: number | null
+          scf_recommended_date: string
+          scf_type: string
+        }
+        Update: {
+          customer_id?: number
+          scf_generated_at?: string
+          scf_id?: number
+          scf_mape?: number | null
+          scf_recommended_date?: string
+          scf_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sales_contact_forecast_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["customer_id"]
+          },
+        ]
       }
       segments: {
         Row: {
-          arr: number | null
-          clv: number | null
-          company_size: string | null
-          CONTACT_ID: number | null
+          arr: number
+          clv: number
+          contact_id: number
           high_risk_probability: number | null
-          predicted_risk_level: string | null
+          predicted_risk_level: string
           segment_label: string | null
         }
         Insert: {
-          arr?: number | null
-          clv?: number | null
-          company_size?: string | null
-          CONTACT_ID?: number | null
+          arr: number
+          clv: number
+          contact_id: number
           high_risk_probability?: number | null
-          predicted_risk_level?: string | null
+          predicted_risk_level: string
           segment_label?: string | null
         }
         Update: {
-          arr?: number | null
-          clv?: number | null
-          company_size?: string | null
-          CONTACT_ID?: number | null
+          arr?: number
+          clv?: number
+          contact_id?: number
           high_risk_probability?: number | null
-          predicted_risk_level?: string | null
+          predicted_risk_level?: string
           segment_label?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "segments_CONTACT_ID_fkey"
-            columns: ["CONTACT_ID"]
-            isOneToOne: false
+            foreignKeyName: "fk_segments_contact"
+            columns: ["contact_id"]
+            isOneToOne: true
             referencedRelation: "contacts"
-            referencedColumns: ["CONTACT_ID"]
+            referencedColumns: ["contact_id"]
           },
         ]
       }
